@@ -21,7 +21,7 @@ type HTTPServer struct {
 }
 
 func Load() *Config {
-	configPath := os.Getenv("CONFIG_PATH")
+	configPath := `C:\Users\Никита\Desktop\Ucheba\4 курс\8 семестр\диплом\NoteVault\config\local.yaml` //Пофиксить
 	if configPath == "" {
 		log.Fatal("CONFIG_PATH is not set")
 	}
