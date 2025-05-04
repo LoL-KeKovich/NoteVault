@@ -5,6 +5,7 @@ go 1.24.2
 require (
 	github.com/go-chi/chi v1.5.5
 	github.com/ilyakaznacheev/cleanenv v1.5.0
+	go.mongodb.org/mongo-driver v1.17.3
 )
 
 require (
