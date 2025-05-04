@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/LoL-KeKovich/NoteVault/internal/config"
+	"github.com/LoL-KeKovich/NoteVault/internal/service"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 )
@@ -16,11 +17,21 @@ func main() {
 	log := SetupLogger(cfg.Env)
 	log.Info("Starting NoteVault at", "address", cfg.HTTPServer.Address)
 
+	noteService := service.NoteService{}
+
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
 
-	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("NoteVault is OK!"))
+	router.Route("/api/v1", func(router chi.Router) {
+		router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("NoteVault is OK!"))
+		})
+
+		router.Get("/notes/{id}", noteService.GetNoteByID)
+		router.Get("/notes", noteService.GetNotes)
+		router.Post("/notes", noteService.CreateNote)
+		router.Put("/notes/{id}", noteService.UpdateNote)
+		router.Delete("/notes/{id}", noteService.DeleteNote)
 	})
 
 	srv := &http.Server{
