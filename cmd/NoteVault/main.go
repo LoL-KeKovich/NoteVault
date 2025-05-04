@@ -18,6 +18,7 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+
 	router.Get("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("NoteVault is OK!"))
 	})
