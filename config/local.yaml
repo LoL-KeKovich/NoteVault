@@ -1,5 +1,5 @@
 env: "local"
-storage_path: "template"
+storage_path: "template" #Исправить
 http_server:
   address: "localhost:8085"
   timeout: 5s

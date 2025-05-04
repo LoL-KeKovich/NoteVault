@@ -2,7 +2,10 @@ module github.com/LoL-KeKovich/NoteVault
 
 go 1.24.2
 
-require github.com/ilyakaznacheev/cleanenv v1.5.0
+require (
+	github.com/go-chi/chi v1.5.5
+	github.com/ilyakaznacheev/cleanenv v1.5.0
+)
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
