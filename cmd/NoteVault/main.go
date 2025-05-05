@@ -1,14 +1,19 @@
 package main
 
 import (
+	"context"
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/LoL-KeKovich/NoteVault/internal/config"
+	"github.com/LoL-KeKovich/NoteVault/internal/repository/mongodb"
 	"github.com/LoL-KeKovich/NoteVault/internal/service"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
@@ -17,7 +22,16 @@ func main() {
 	log := SetupLogger(cfg.Env)
 	log.Info("Starting NoteVault at", "address", cfg.HTTPServer.Address)
 
-	noteService := service.NoteService{}
+	mongoClient, ctx := mongoConnect(cfg, log)
+	defer mongoClient.Disconnect(ctx)
+
+	noteCollection := mongoClient.Database("NoteVault").Collection("notes")
+
+	noteService := service.NoteService{
+		DBClient: mongodb.MongoClient{
+			Client: *noteCollection,
+		},
+	}
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
@@ -70,4 +84,25 @@ func SetupLogger(env string) *slog.Logger {
 	}
 
 	return log
+}
+
+func mongoConnect(cfg *config.Config, log *slog.Logger) (*mongo.Client, context.Context) {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	clientOptions := options.Client().ApplyURI(cfg.StoragePath)
+
+	client, err := mongo.Connect(ctx, clientOptions)
+	if err != nil {
+		panic(err)
+	}
+
+	err = client.Ping(ctx, nil)
+	if err != nil {
+		panic(err)
+	}
+
+	log.Info("Successfully connected to mongo!")
+
+	return client, ctx
 }

@@ -1,5 +1,5 @@
 env: "local"
-storage_path: "template" #Исправить
+storage_path: "mongodb://127.0.0.1:27017" #Исправить
 http_server:
   address: "localhost:8085"
   timeout: 5s

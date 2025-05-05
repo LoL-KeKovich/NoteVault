@@ -1,4 +1,4 @@
-package mongo
+package mongodb
 
 import "github.com/LoL-KeKovich/NoteVault/internal/model"
 
@@ -14,7 +14,7 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 	return []model.Note{}, nil
 }
 
-func (mc MongoClient) UpdateNote(id string, name string, text string, color string, media string, order int) (int, error) {
+func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int) (int, error) {
 	return 0, nil
 }
 
