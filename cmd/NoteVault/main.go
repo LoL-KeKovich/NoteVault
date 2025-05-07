@@ -41,11 +41,11 @@ func main() {
 			w.Write([]byte("NoteVault is OK!"))
 		})
 
-		router.Get("/notes/{id}", noteService.GetNoteByID)
-		router.Get("/notes", noteService.GetNotes)
-		router.Post("/notes", noteService.CreateNote)
-		router.Put("/notes/{id}", noteService.UpdateNote)
-		router.Delete("/notes/{id}", noteService.DeleteNote)
+		router.Get("/notes/{id}", noteService.HandleGetNoteByID)
+		router.Get("/notes", noteService.HandleGetNotes)
+		router.Post("/notes", noteService.HandleCreateNote)
+		router.Put("/notes/{id}", noteService.HandleUpdateNote)
+		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
 	})
 
 	srv := &http.Server{
