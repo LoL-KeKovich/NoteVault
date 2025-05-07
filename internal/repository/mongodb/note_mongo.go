@@ -65,6 +65,10 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 	return notes, nil
 }
 
+func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
+	return []model.Note{}, nil
+}
+
 func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

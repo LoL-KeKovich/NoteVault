@@ -44,6 +44,7 @@ func main() {
 
 		router.Get("/notes/{id}", noteService.HandleGetNoteByID)
 		router.Get("/notes", noteService.HandleGetNotes)
+		router.Get("/notes/group/{id}", noteService.HandleGetNotesByNoteBookID)
 		router.Post("/notes", noteService.HandleCreateNote)
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)

@@ -6,6 +6,7 @@ type NoteRepo interface {
 	CreateNote(model.Note) (string, error)
 	GetNoteByID(string) (model.Note, error)
 	GetNotes() ([]model.Note, error)
+	GetNotesByNoteBookID(string) ([]model.Note, error)
 	UpdateNote(string, string, string, string, string, int) (int, error)
 	DeleteNote(string) (int, error)
 }

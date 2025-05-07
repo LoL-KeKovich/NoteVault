@@ -93,6 +93,10 @@ func (srv NoteService) HandleGetNotes(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func (srv NoteService) HandleGetNotesByNoteBookID(w http.ResponseWriter, r *http.Request) {
+
+}
+
 func (srv NoteService) HandleUpdateNote(w http.ResponseWriter, r *http.Request) {
 	response := dto.NoteResponse{}
 	var noteReq dto.NoteRequest
