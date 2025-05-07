@@ -35,6 +35,7 @@ func main() {
 
 	router := chi.NewRouter()
 	router.Use(middleware.Logger)
+	router.Use(middleware.SetHeader("CONTENT-TYPE", "application/json"))
 
 	router.Route("/api/v1", func(router chi.Router) {
 		router.Get("/health", func(w http.ResponseWriter, r *http.Request) {

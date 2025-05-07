@@ -72,15 +72,29 @@ func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int)
 	}
 
 	filter := bson.D{{Key: "_id", Value: docId}}
-	updateStmt := bson.D{
-		{Key: "$set", Value: bson.D{
-			{Key: "name", Value: name},
-			{Key: "text", Value: text},
-			{Key: "color", Value: color},
-			{Key: "media", Value: media},
-			{Key: "order", Value: order},
-		}},
+
+	//Необходимый костыль
+	setDoc := bson.D{}
+	if name != "" {
+		setDoc = append(setDoc, bson.E{Key: "name", Value: name})
 	}
+	if text != "" {
+		setDoc = append(setDoc, bson.E{Key: "text", Value: text})
+	}
+	if color != "" {
+		setDoc = append(setDoc, bson.E{Key: "color", Value: color})
+	}
+	if media != "" {
+		setDoc = append(setDoc, bson.E{Key: "media", Value: media})
+	}
+	if order != 0 {
+		setDoc = append(setDoc, bson.E{Key: "order", Value: order})
+	}
+	if len(setDoc) == 0 {
+		return 0, nil
+	}
+
+	updateStmt := bson.D{{Key: "$set", Value: setDoc}}
 
 	res, err := mc.Client.UpdateOne(context.Background(), filter, updateStmt)
 	if err != nil {
