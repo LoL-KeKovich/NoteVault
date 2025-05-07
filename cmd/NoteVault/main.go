@@ -25,7 +25,7 @@ func main() {
 	mongoClient, ctx := mongoConnect(cfg, log)
 	defer mongoClient.Disconnect(ctx)
 
-	noteCollection := mongoClient.Database("NoteVault").Collection("notes")
+	noteCollection := mongoClient.Database("NoteVault").Collection("notes") //Захардкожено
 
 	noteService := service.NoteService{
 		DBClient: mongodb.MongoClient{
