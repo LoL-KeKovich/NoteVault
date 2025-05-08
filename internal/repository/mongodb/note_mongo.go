@@ -27,6 +27,7 @@ func (mc MongoClient) GetNoteByID(id string) (model.Note, error) {
 	}
 
 	var note model.Note
+
 	filter := bson.D{{Key: "_id", Value: docId}}
 
 	err = mc.Client.FindOne(context.Background(), filter).Decode(&note)
