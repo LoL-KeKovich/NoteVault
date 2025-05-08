@@ -25,11 +25,18 @@ func main() {
 	mongoClient, ctx := mongoConnect(cfg, log)
 	defer mongoClient.Disconnect(ctx)
 
-	noteCollection := mongoClient.Database("NoteVault").Collection("notes") //Захардкожено
+	noteCollection := mongoClient.Database("NoteVault").Collection("notes")         //Захардкожено
+	noteBookCollection := mongoClient.Database("NoteVault").Collection("notebooks") //Захардкожено
 
 	noteService := service.NoteService{
 		DBClient: mongodb.MongoClient{
 			Client: *noteCollection,
+		},
+	}
+
+	noteBookService := service.NoteBookService{
+		DBClient: mongodb.MongoClient{
+			Client: *noteBookCollection,
 		},
 	}
 
@@ -48,6 +55,12 @@ func main() {
 		router.Post("/notes", noteService.HandleCreateNote)
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
+
+		router.Get("/notebooks/{id}", noteBookService.HandleGetNoteBookByID)
+		router.Get("/notebooks", noteBookService.HandleGetNoteBooks)
+		router.Post("/notebooks", noteBookService.HandleCreateNoteBook)
+		router.Put("/notebooks/{id}", noteBookService.HandleUpdateNoteBook)
+		router.Delete("/notebooks/{id}", noteBookService.HandleDeleteNoteBook)
 	})
 
 	srv := &http.Server{
