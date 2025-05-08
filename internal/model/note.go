@@ -9,5 +9,5 @@ type Note struct {
 	Color      string             `bson:"color,omitempty" json:"color,omitempty"`
 	Media      string             `bson:"media,omitempty" json:"media,omitempty"`
 	Order      int                `bson:"order,omitempty" json:"order,omitempty"`
-	NoteBookID primitive.ObjectID `bson:"notebook_id,omitempty" json:"note_book_id,omitempty"`
+	NoteBookID primitive.ObjectID `bson:"notebook_id,omitempty" json:"notebook_id,omitempty"`
 }

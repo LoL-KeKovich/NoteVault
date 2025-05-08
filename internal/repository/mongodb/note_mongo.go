@@ -44,7 +44,7 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 
 	cursor, err := mc.Client.Find(context.Background(), filter)
 	if err != nil {
-		return []model.Note{}, nil
+		return []model.Note{}, fmt.Errorf("error finding notes")
 	}
 	defer cursor.Close(context.Background())
 
@@ -66,7 +66,34 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 }
 
 func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
-	return []model.Note{}, nil
+	docId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return []model.Note{}, fmt.Errorf("wrong notebook id")
+	}
+
+	filter := bson.D{{Key: "notebook_id", Value: docId}}
+
+	cursor, err := mc.Client.Find(context.Background(), filter)
+	if err != nil {
+		return []model.Note{}, fmt.Errorf("error finding notes in notebook")
+	}
+	defer cursor.Close(context.Background())
+
+	var notes []model.Note
+
+	for cursor.Next(context.Background()) {
+		var note model.Note
+
+		err := cursor.Decode(&note)
+		if err != nil {
+			slog.Error("error decoding notes", slog.String("error", err.Error()))
+			continue
+		}
+
+		notes = append(notes, note)
+	}
+
+	return notes, nil
 }
 
 func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int) (int, error) {
