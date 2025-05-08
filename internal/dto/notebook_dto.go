@@ -3,7 +3,7 @@ package dto
 type NoteBookRequest struct {
 	Name        string `json:"name,omitempty"`
 	Description string `json:"description,omitempty"`
-	IsActive    bool   `json:"is_active,omitempty"`
+	IsActive    *bool  `json:"is_active"`
 }
 
 type NoteBookResponse struct {

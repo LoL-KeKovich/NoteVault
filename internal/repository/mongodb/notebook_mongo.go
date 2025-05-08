@@ -66,7 +66,7 @@ func (mc MongoClient) GetNoteBooks() ([]model.NoteBook, error) {
 	return noteBooks, nil
 }
 
-func (mc MongoClient) UpdateNoteBook(id, name, description string, isActive bool) (int, error) {
+func (mc MongoClient) UpdateNoteBook(id, name, description string, isActive *bool) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return 0, fmt.Errorf("wrong id")
@@ -81,7 +81,9 @@ func (mc MongoClient) UpdateNoteBook(id, name, description string, isActive bool
 	if description != "" {
 		setDoc = append(setDoc, bson.E{Key: "description", Value: description})
 	}
-	setDoc = append(setDoc, bson.E{Key: "is_active", Value: isActive})
+	if isActive != nil {
+		setDoc = append(setDoc, bson.E{Key: "is_active", Value: *isActive})
+	}
 	if len(setDoc) == 0 {
 		return 0, nil
 	}
