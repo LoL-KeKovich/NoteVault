@@ -65,6 +65,7 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 	return notes, nil
 }
 
+// Сделать дополнительную проверку на существование книги заметок
 func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

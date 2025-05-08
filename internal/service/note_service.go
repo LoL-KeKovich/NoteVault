@@ -29,11 +29,12 @@ func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) 
 	}
 
 	note := model.Note{
-		Name:  noteReq.Name,
-		Text:  noteReq.Text,
-		Color: noteReq.Color,
-		Media: noteReq.Media,
-		Order: noteReq.Order,
+		Name:       noteReq.Name,
+		Text:       noteReq.Text,
+		Color:      noteReq.Color,
+		Media:      noteReq.Media,
+		Order:      noteReq.Order,
+		NoteBookID: noteReq.NoteBookID,
 	}
 
 	res, err := srv.DBClient.CreateNote(note)
@@ -94,7 +95,29 @@ func (srv NoteService) HandleGetNotes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (srv NoteService) HandleGetNotesByNoteBookID(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
 
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	notes, err := srv.DBClient.GetNotesByNoteBookID(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error finding notes from notebook"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Notes from notebook found")
+	response.Data = notes
+	json.NewEncoder(w).Encode(response)
 }
 
 func (srv NoteService) HandleUpdateNote(w http.ResponseWriter, r *http.Request) {
