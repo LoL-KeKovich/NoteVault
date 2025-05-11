@@ -107,6 +107,15 @@ func (srv NoteService) HandleGetNotesByNoteBookID(w http.ResponseWriter, r *http
 		return
 	}
 
+	_, err := srv.HelperNoteBookClient.GetNoteBookByID(id)
+	if err != nil {
+		slog.Error("No such notebook")
+		response.Error = "Wrong notebook id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 	notes, err := srv.DBClient.GetNotesByNoteBookID(id)
 	if err != nil {
 		slog.Error(err.Error())
