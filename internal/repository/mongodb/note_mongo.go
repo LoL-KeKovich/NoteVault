@@ -137,6 +137,28 @@ func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int)
 	return int(res.ModifiedCount), nil
 }
 
+func (mc MongoClient) UpdateNoteNoteBook(noteID, noteBookID string) (int, error) {
+	docId, err := primitive.ObjectIDFromHex(noteID)
+	if err != nil {
+		return 0, fmt.Errorf("wrong id")
+	}
+
+	objNoteBookId, err := primitive.ObjectIDFromHex(noteBookID)
+	if err != nil {
+		return 0, fmt.Errorf("wrong id")
+	}
+
+	filter := bson.D{{Key: "_id", Value: docId}}
+	updateStmt := bson.D{{Key: "$set", Value: bson.D{{Key: "notebook_id", Value: objNoteBookId}}}}
+
+	res, err := mc.Client.UpdateOne(context.Background(), filter, updateStmt)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(res.ModifiedCount), nil
+}
+
 // Вспомогательная функция для удаления пустых id групп
 func (mc MongoClient) UnlinkNotesFromNoteBook(id string) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)

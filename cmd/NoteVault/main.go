@@ -32,6 +32,9 @@ func main() {
 		DBClient: mongodb.MongoClient{
 			Client: *noteCollection,
 		},
+		HelperNoteBookClient: mongodb.MongoClient{
+			Client: *noteBookCollection,
+		},
 	}
 
 	noteBookService := service.NoteBookService{
@@ -57,6 +60,7 @@ func main() {
 		router.Get("/notes/group/{id}", noteService.HandleGetNotesByNoteBookID)
 		router.Post("/notes", noteService.HandleCreateNote)
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
+		router.Put("/notes/notebook/{id}", noteService.HandleUpdateNoteNoteBook)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
 
 		router.Get("/notebooks/{id}", noteBookService.HandleGetNoteBookByID)

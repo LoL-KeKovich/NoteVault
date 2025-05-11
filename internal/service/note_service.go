@@ -12,7 +12,8 @@ import (
 )
 
 type NoteService struct {
-	DBClient repository.NoteRepo
+	DBClient             repository.NoteRepo
+	HelperNoteBookClient repository.NoteBookRepo
 }
 
 func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) {
@@ -152,6 +153,51 @@ func (srv NoteService) HandleUpdateNote(w http.ResponseWriter, r *http.Request) 
 	}
 
 	slog.Info("Note updated")
+	response.Data = res
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleUpdateNoteNoteBook(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+	var noteReq dto.NoteRequest
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&noteReq)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Wrong request"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	_, err = srv.HelperNoteBookClient.GetNoteBookByID(noteReq.NoteBookID.Hex())
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "error: wrong group id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	res, err := srv.DBClient.UpdateNoteNoteBook(id, noteReq.NoteBookID.Hex())
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error changing notebook for note"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Notebook for note changed")
 	response.Data = res
 	json.NewEncoder(w).Encode(response)
 }
