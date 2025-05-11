@@ -12,7 +12,8 @@ import (
 )
 
 type NoteBookService struct {
-	DBClient repository.NoteBookRepo
+	DBClient         repository.NoteBookRepo
+	HelperNoteClient repository.NoteRepo
 }
 
 func (srv NoteBookService) HandleCreateNoteBook(w http.ResponseWriter, r *http.Request) {
@@ -135,6 +136,15 @@ func (srv NoteBookService) HandleDeleteNoteBook(w http.ResponseWriter, r *http.R
 		slog.Error("Empty id field")
 		response.Error = "Wrong id"
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	_, err := srv.HelperNoteClient.UnlinkNotesFromNoteBook(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error unlinking notes from notebook"
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}

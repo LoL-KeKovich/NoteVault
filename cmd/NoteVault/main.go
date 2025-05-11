@@ -38,6 +38,9 @@ func main() {
 		DBClient: mongodb.MongoClient{
 			Client: *noteBookCollection,
 		},
+		HelperNoteClient: mongodb.MongoClient{
+			Client: *noteCollection,
+		},
 	}
 
 	router := chi.NewRouter()
