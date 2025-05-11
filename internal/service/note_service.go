@@ -29,12 +29,19 @@ func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
+	if noteReq.IsDeleted == nil {
+		noteReq.IsDeleted = new(bool)
+	}
+
+	*noteReq.IsDeleted = false //При создании элемент не может попасть в корзину
+
 	note := model.Note{
 		Name:       noteReq.Name,
 		Text:       noteReq.Text,
 		Color:      noteReq.Color,
 		Media:      noteReq.Media,
 		Order:      noteReq.Order,
+		IsDeleted:  noteReq.IsDeleted,
 		NoteBookID: noteReq.NoteBookID,
 	}
 
@@ -91,6 +98,23 @@ func (srv NoteService) HandleGetNotes(w http.ResponseWriter, r *http.Request) {
 	}
 
 	slog.Info("Notes found")
+	response.Data = notes
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleGetTrashedNotes(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	notes, err := srv.DBClient.GetTrashedNotes()
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error finding trashed notes in db"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Trashed notes found")
 	response.Data = notes
 	json.NewEncoder(w).Encode(response)
 }
@@ -208,6 +232,58 @@ func (srv NoteService) HandleUpdateNoteNoteBook(w http.ResponseWriter, r *http.R
 
 	slog.Info("Notebook for note changed")
 	response.Data = res
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleMoveNoteToTrash(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := srv.DBClient.MoveNoteToTrash(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error moving note to trash"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Changed |is_deleted| field to true")
+	response.Data = "Successfully moved note to trash"
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleRestoreNoteFromTrash(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := srv.DBClient.RestoreNoteFromTrash(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error restoring note from trash"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Changed |is_deleted| field to false")
+	response.Data = "Successfully removed note from trash"
 	json.NewEncoder(w).Encode(response)
 }
 

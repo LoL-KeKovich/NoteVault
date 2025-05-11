@@ -8,6 +8,7 @@ type NoteRequest struct {
 	Color      string             `json:"color,omitempty"`
 	Media      string             `json:"media,omitempty"`
 	Order      int                `json:"order,omitempty"`
+	IsDeleted  *bool              `json:"is_deleted,omitempty"`
 	NoteBookID primitive.ObjectID `json:"notebook_id,omitempty"` //Проверить тип данных
 }
 

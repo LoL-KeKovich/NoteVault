@@ -57,11 +57,14 @@ func main() {
 
 		router.Get("/notes/{id}", noteService.HandleGetNoteByID)
 		router.Get("/notes", noteService.HandleGetNotes)
+		router.Get("/notes/trash", noteService.HandleGetTrashedNotes)
+		router.Get("/notes/trash/{id}", noteService.HandleRestoreNoteFromTrash)
 		router.Get("/notes/group/{id}", noteService.HandleGetNotesByNoteBookID)
 		router.Post("/notes", noteService.HandleCreateNote)
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
 		router.Put("/notes/notebook/{id}", noteService.HandleUpdateNoteNoteBook)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
+		router.Delete("/notes/trash/{id}", noteService.HandleMoveNoteToTrash)
 
 		router.Get("/notebooks/{id}", noteBookService.HandleGetNoteBookByID)
 		router.Get("/notebooks", noteBookService.HandleGetNoteBooks)
