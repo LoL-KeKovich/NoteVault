@@ -63,6 +63,10 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 		notes = append(notes, note)
 	}
 
+	if len(notes) == 0 {
+		return []model.Note{}, fmt.Errorf("empty slice")
+	}
+
 	return notes, nil
 }
 
@@ -93,6 +97,10 @@ func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 		}
 
 		notes = append(notes, note)
+	}
+
+	if len(notes) == 0 {
+		return []model.Note{}, fmt.Errorf("empty slice")
 	}
 
 	return notes, nil

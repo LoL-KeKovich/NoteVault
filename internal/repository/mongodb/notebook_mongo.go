@@ -63,6 +63,10 @@ func (mc MongoClient) GetNoteBooks() ([]model.NoteBook, error) {
 		noteBooks = append(noteBooks, noteBook)
 	}
 
+	if len(noteBooks) == 0 {
+		return []model.NoteBook{}, fmt.Errorf("empty slice")
+	}
+
 	return noteBooks, nil
 }
 
