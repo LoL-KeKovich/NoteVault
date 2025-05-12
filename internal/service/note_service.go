@@ -155,6 +155,40 @@ func (srv NoteService) HandleGetNotesByNoteBookID(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(response)
 }
 
+func (srv NoteService) HandleGetNotesByTags(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+	var noteReq dto.NoteTagsRequest
+
+	err := json.NewDecoder(r.Body).Decode(&noteReq)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Wrong request"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	var tagIDs []string
+
+	for _, id := range noteReq.TagIDs {
+		tagID := id.Hex()
+		tagIDs = append(tagIDs, tagID)
+	}
+
+	notes, err := srv.DBClient.GetNotesByTags(tagIDs)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error finding notes by tags"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Notes by tags found")
+	response.Data = notes
+	json.NewEncoder(w).Encode(response)
+}
+
 func (srv NoteService) HandleUpdateNote(w http.ResponseWriter, r *http.Request) {
 	response := dto.NoteResponse{}
 	var noteReq dto.NoteRequest

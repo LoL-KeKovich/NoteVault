@@ -13,6 +13,10 @@ type NoteRequest struct {
 	TagID      primitive.ObjectID `json:"tag_id,omitempty"`
 }
 
+type NoteTagsRequest struct {
+	TagIDs []primitive.ObjectID `json:"tags,omitempty"`
+}
+
 type NoteResponse struct {
 	Data  interface{} `json:"data,omitempty"`
 	Error string      `json:"error,omitempty"`
