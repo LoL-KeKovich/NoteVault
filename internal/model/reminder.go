@@ -7,7 +7,7 @@ import (
 )
 
 type Reminder struct {
-	ID       primitive.ObjectID `bson:"id,omitempty" json:"id,omitempty"`
+	ID       primitive.ObjectID `bson:"_id,omitempty" json:"id,omitempty"`
 	Name     string             `bson:"name,omitempty" json:"name,omitempty"`
 	Message  string             `bson:"message,omitempty" json:"message,omitempty"`
 	RemindAt time.Time          `bson:"remind_at,omitempty" json:"remind_at,omitempty"`
