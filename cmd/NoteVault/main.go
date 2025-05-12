@@ -54,6 +54,9 @@ func main() {
 		DBClient: mongodb.MongoClient{
 			Client: *tagCollection,
 		},
+		HelperNoteClient: mongodb.MongoClient{
+			Client: *noteCollection,
+		},
 	}
 
 	router := chi.NewRouter()

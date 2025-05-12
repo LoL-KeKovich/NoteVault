@@ -11,6 +11,7 @@ type NoteRepo interface {
 	UpdateNote(string, string, string, string, string, int) (int, error)
 	UpdateNoteNoteBook(string, string) (int, error)
 	UnlinkNotesFromNoteBook(string) (int, error)
+	UnlinkNotesFromTag(string) (int, error)
 	AddTagToNote(string, string) (int, error)
 	MoveNoteToTrash(string) error
 	RestoreNoteFromTrash(string) error

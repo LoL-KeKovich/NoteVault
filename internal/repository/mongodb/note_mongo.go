@@ -200,3 +200,20 @@ func (mc MongoClient) DeleteNote(id string) (int, error) {
 
 	return int(res.DeletedCount), nil
 }
+
+func (mc MongoClient) UnlinkNotesFromTag(id string) (int, error) {
+	tagId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return 0, fmt.Errorf("wrong id")
+	}
+
+	filter := bson.D{{Key: "tags", Value: tagId}}
+	updateStmt := bson.D{{Key: "$pull", Value: bson.D{{Key: "tags", Value: tagId}}}}
+
+	res, err := mc.Client.UpdateMany(context.Background(), filter, updateStmt)
+	if err != nil {
+		return 0, err
+	}
+
+	return int(res.ModifiedCount), nil
+}

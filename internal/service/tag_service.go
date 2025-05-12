@@ -12,7 +12,8 @@ import (
 )
 
 type TagService struct {
-	DBClient repository.TagRepo
+	DBClient         repository.TagRepo
+	HelperNoteClient repository.NoteRepo
 }
 
 func (srv TagService) HandleCreateTag(w http.ResponseWriter, r *http.Request) {
@@ -134,6 +135,15 @@ func (srv TagService) HandleDeleteTag(w http.ResponseWriter, r *http.Request) {
 		slog.Error("Empty id field")
 		response.Error = "Wrong id"
 		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	_, err := srv.HelperNoteClient.UnlinkNotesFromTag(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error unlinking notes from tag"
+		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
