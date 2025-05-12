@@ -77,6 +77,7 @@ func main() {
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
 		router.Put("/notes/notebook/{id}", noteService.HandleUpdateNoteNoteBook)
 		router.Put("/notes/tag/{id}", noteService.HandleAddTagToNote)
+		router.Patch("/notes/tag/{id}", noteService.HandleRemoveTagFromNote)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
 		router.Delete("/notes/trash/{id}", noteService.HandleMoveNoteToTrash)
 

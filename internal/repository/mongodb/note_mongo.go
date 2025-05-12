@@ -175,7 +175,7 @@ func (mc MongoClient) UnlinkNotesFromNoteBook(id string) (int, error) {
 	}
 
 	filter := bson.D{{Key: "notebook_id", Value: docId}}
-	updateStmt := bson.D{{Key: "$set", Value: bson.D{{Key: "notebook_id", Value: nil}}}}
+	updateStmt := bson.D{{Key: "$unset", Value: bson.D{{Key: "notebook_id", Value: ""}}}}
 
 	res, err := mc.Client.UpdateMany(context.Background(), filter, updateStmt)
 	if err != nil {

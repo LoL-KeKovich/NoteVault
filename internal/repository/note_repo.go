@@ -15,5 +15,6 @@ type NoteRepo interface {
 	AddTagToNote(string, string) (int, error)
 	MoveNoteToTrash(string) error
 	RestoreNoteFromTrash(string) error
+	RemoveTagFromNote(string, string) (int, error)
 	DeleteNote(string) (int, error)
 }

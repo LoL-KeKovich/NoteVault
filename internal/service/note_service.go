@@ -366,3 +366,56 @@ func (srv NoteService) HandleDeleteNote(w http.ResponseWriter, r *http.Request) 
 	response.Data = res
 	json.NewEncoder(w).Encode(response)
 }
+
+func (srv NoteService) HandleRemoveTagFromNote(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+	var noteReq dto.NoteRequest
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&noteReq)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Wrong request"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	if noteReq.TagID.IsZero() {
+		slog.Error("Empty tag_id field")
+		response.Error = "No tag id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	_, err = srv.HelperTagClient.GetTagByID(noteReq.TagID.Hex())
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "wrong tag id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	res, err := srv.DBClient.RemoveTagFromNote(id, noteReq.TagID.Hex())
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error removing tag from note"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Removed tag from notebook")
+	response.Data = res
+	json.NewEncoder(w).Encode(response)
+}
