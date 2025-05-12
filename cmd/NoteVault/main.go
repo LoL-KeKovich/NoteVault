@@ -36,6 +36,9 @@ func main() {
 		HelperNoteBookClient: mongodb.MongoClient{
 			Client: *noteBookCollection,
 		},
+		HelperTagClient: mongodb.MongoClient{
+			Client: *tagCollection,
+		},
 	}
 
 	noteBookService := service.NoteBookService{
@@ -70,6 +73,7 @@ func main() {
 		router.Post("/notes", noteService.HandleCreateNote)
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
 		router.Put("/notes/notebook/{id}", noteService.HandleUpdateNoteNoteBook)
+		router.Put("/notes/tag/{id}", noteService.HandleAddTagToNote)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
 		router.Delete("/notes/trash/{id}", noteService.HandleMoveNoteToTrash)
 
@@ -82,8 +86,8 @@ func main() {
 		router.Get("/tags/{id}", tagService.HandleGetTagByID)
 		router.Get("/tags", tagService.HandleGetTags)
 		router.Post("/tags", tagService.HandleCreateTag)
-		router.Put("/tags", tagService.HandleUpdateTag)
-		router.Delete("/tags", tagService.HandleDeleteTag)
+		router.Put("/tags/{id}", tagService.HandleUpdateTag)
+		router.Delete("/tags/{id}", tagService.HandleDeleteTag)
 	})
 
 	srv := &http.Server{

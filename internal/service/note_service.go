@@ -14,6 +14,7 @@ import (
 type NoteService struct {
 	DBClient             repository.NoteRepo
 	HelperNoteBookClient repository.NoteBookRepo
+	HelperTagClient      repository.TagRepo
 }
 
 func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) {
@@ -231,6 +232,59 @@ func (srv NoteService) HandleUpdateNoteNoteBook(w http.ResponseWriter, r *http.R
 	}
 
 	slog.Info("Notebook for note changed")
+	response.Data = res
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleAddTagToNote(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+	var noteReq dto.NoteRequest
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&noteReq)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Wrong request"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	if noteReq.TagID.IsZero() {
+		slog.Error("Empty tag_id field")
+		response.Error = "No tag id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	_, err = srv.HelperTagClient.GetTagByID(noteReq.TagID.Hex())
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "wrong tag id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	res, err := srv.DBClient.AddTagToNote(id, noteReq.TagID.Hex())
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error adding tag to note"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Added tag to notebook")
 	response.Data = res
 	json.NewEncoder(w).Encode(response)
 }
