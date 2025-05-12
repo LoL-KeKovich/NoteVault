@@ -74,6 +74,7 @@ func main() {
 		router.Get("/notes/trash/{id}", noteService.HandleRestoreNoteFromTrash)
 		router.Get("/notes/group/{id}", noteService.HandleGetNotesByNoteBookID)
 		router.Post("/notes", noteService.HandleCreateNote)
+		router.Post("/notes/tag", noteService.HandleGetNotesByTags)
 		router.Put("/notes/{id}", noteService.HandleUpdateNote)
 		router.Put("/notes/notebook/{id}", noteService.HandleUpdateNoteNoteBook)
 		router.Put("/notes/tag/{id}", noteService.HandleAddTagToNote)
