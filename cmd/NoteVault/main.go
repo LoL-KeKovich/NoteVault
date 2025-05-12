@@ -27,6 +27,7 @@ func main() {
 
 	noteCollection := mongoClient.Database("NoteVault").Collection("notes")         //Захардкожено
 	noteBookCollection := mongoClient.Database("NoteVault").Collection("notebooks") //Захардкожено
+	tagCollection := mongoClient.Database("NoteVault").Collection("tags")           //Захардкожено
 
 	noteService := service.NoteService{
 		DBClient: mongodb.MongoClient{
@@ -43,6 +44,12 @@ func main() {
 		},
 		HelperNoteClient: mongodb.MongoClient{
 			Client: *noteCollection,
+		},
+	}
+
+	tagService := service.TagService{
+		DBClient: mongodb.MongoClient{
+			Client: *tagCollection,
 		},
 	}
 
@@ -71,6 +78,12 @@ func main() {
 		router.Post("/notebooks", noteBookService.HandleCreateNoteBook)
 		router.Put("/notebooks/{id}", noteBookService.HandleUpdateNoteBook)
 		router.Delete("/notebooks/{id}", noteBookService.HandleDeleteNoteBook)
+
+		router.Get("/tags/{id}", tagService.HandleGetTagByID)
+		router.Get("/tags", tagService.HandleGetTags)
+		router.Post("/tags", tagService.HandleCreateTag)
+		router.Put("/tags", tagService.HandleUpdateTag)
+		router.Delete("/tags", tagService.HandleDeleteTag)
 	})
 
 	srv := &http.Server{
