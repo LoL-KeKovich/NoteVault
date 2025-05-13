@@ -25,9 +25,9 @@ func main() {
 	mongoClient, ctx := mongoConnect(cfg, log)
 	defer mongoClient.Disconnect(ctx)
 
-	noteCollection := mongoClient.Database("NoteVault").Collection("notes")         //Захардкожено
-	noteBookCollection := mongoClient.Database("NoteVault").Collection("notebooks") //Захардкожено
-	tagCollection := mongoClient.Database("NoteVault").Collection("tags")           //Захардкожено
+	noteCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.Notes)
+	noteBookCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.NoteBooks)
+	tagCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.Tags)
 
 	noteService := service.NoteService{
 		DBClient: mongodb.MongoClient{

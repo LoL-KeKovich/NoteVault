@@ -1,5 +1,10 @@
 env: "local"
-storage_path: "mongodb://127.0.0.1:27017" #Исправить
+storage_path: "mongodb://127.0.0.1:27017"
+database: "NoteVault"
+collections:
+  notes: "notes"
+  notebooks: "notebooks"
+  tags: "tags"
 http_server:
   address: "localhost:8085"
   timeout: 5s

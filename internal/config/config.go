@@ -11,7 +11,15 @@ import (
 type Config struct {
 	Env         string `yaml:"env" env-default:"local"`
 	StoragePath string `yaml:"storage_path" env-required:"true"`
+	Database    string `yaml:"database"`
+	Collections `yaml:"collections"`
 	HTTPServer  `yaml:"http_server"`
+}
+
+type Collections struct {
+	Notes     string `yaml:"notes"`
+	NoteBooks string `yaml:"notebooks"`
+	Tags      string `yaml:"tags"`
 }
 
 type HTTPServer struct {
