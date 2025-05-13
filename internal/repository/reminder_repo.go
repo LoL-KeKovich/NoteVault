@@ -9,6 +9,7 @@ import (
 type ReminderRepo interface {
 	CreateReminder(model.Reminder) (string, error)
 	GetRemindersByNote(string) ([]model.Reminder, error)
+	GetActiveReminders() ([]model.Reminder, error)
 	UpdateReminder(string, string, string, time.Time, *bool, string) (int, error)
 	DeleteReminder(string) (int, error)
 }

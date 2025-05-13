@@ -13,5 +13,5 @@ type Reminder struct {
 	RemindAt time.Time          `bson:"remind_at,omitempty" json:"remind_at,omitempty"`
 	IsActive *bool              `bson:"is_active,omitempty" json:"is_active,omitempty"`
 	Repeat   string             `bson:"repeat,omitempty" json:"repeat,omitempty"`
-	NoteID   primitive.ObjectID `bson:"note_id,omitempty" json:"note_id,omitempty"`
+	NoteID   primitive.ObjectID `bson:"note_id" json:"note_id"`
 }
