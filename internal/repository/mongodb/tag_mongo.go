@@ -63,10 +63,6 @@ func (mc MongoClient) GetTags() ([]model.Tag, error) {
 		tags = append(tags, tag)
 	}
 
-	if len(tags) == 0 {
-		return []model.Tag{}, fmt.Errorf("empty slice")
-	}
-
 	return tags, nil
 }
 

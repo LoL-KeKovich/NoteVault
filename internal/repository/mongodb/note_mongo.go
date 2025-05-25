@@ -41,7 +41,12 @@ func (mc MongoClient) GetNoteByID(id string) (model.Note, error) {
 }
 
 func (mc MongoClient) GetNotes() ([]model.Note, error) {
-	filter := bson.D{}
+	filter := bson.D{
+		{Key: "$or", Value: bson.A{
+			bson.D{{Key: "is_deleted", Value: bson.D{{Key: "$exists", Value: false}}}},
+			bson.D{{Key: "is_deleted", Value: false}},
+		}},
+	}
 
 	cursor, err := mc.Client.Find(context.Background(), filter)
 	if err != nil {
@@ -61,10 +66,6 @@ func (mc MongoClient) GetNotes() ([]model.Note, error) {
 		}
 
 		notes = append(notes, note)
-	}
-
-	if len(notes) == 0 {
-		return []model.Note{}, fmt.Errorf("empty slice")
 	}
 
 	return notes, nil
@@ -97,10 +98,6 @@ func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 		}
 
 		notes = append(notes, note)
-	}
-
-	if len(notes) == 0 {
-		return []model.Note{}, fmt.Errorf("empty slice")
 	}
 
 	return notes, nil

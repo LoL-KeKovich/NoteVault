@@ -67,9 +67,5 @@ func (mc MongoClient) GetTrashedNotes() ([]model.Note, error) {
 		notes = append(notes, note)
 	}
 
-	if len(notes) == 0 {
-		return []model.Note{}, fmt.Errorf("empty slice")
-	}
-
 	return notes, nil
 }

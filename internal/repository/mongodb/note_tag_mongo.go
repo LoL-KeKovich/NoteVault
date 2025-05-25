@@ -86,9 +86,5 @@ func (mc MongoClient) GetNotesByTags(tagIDs []string) ([]model.Note, error) {
 		notes = append(notes, note)
 	}
 
-	if len(notes) == 0 {
-		return []model.Note{}, fmt.Errorf("no notes found with the specified tags")
-	}
-
 	return notes, nil
 }
