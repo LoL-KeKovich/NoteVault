@@ -9,7 +9,7 @@ type NoteRepo interface {
 	GetNotesByNoteBookID(string) ([]model.Note, error)
 	GetTrashedNotes() ([]model.Note, error)
 	GetNotesByTags([]string) ([]model.Note, error)
-	UpdateNote(string, string, string, string, string, int) (int, error)
+	UpdateNote(string, string, string, string, int) (int, error)
 	UpdateNoteNoteBook(string, string) (int, error)
 	UnlinkNotesFromNoteBook(string) (int, error)
 	UnlinkNotesFromTag(string) (int, error)

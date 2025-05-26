@@ -40,7 +40,6 @@ func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) 
 		Name:       noteReq.Name,
 		Text:       noteReq.Text,
 		Color:      noteReq.Color,
-		Media:      noteReq.Media,
 		Order:      noteReq.Order,
 		IsDeleted:  noteReq.IsDeleted,
 		NoteBookID: noteReq.NoteBookID,
@@ -211,7 +210,7 @@ func (srv NoteService) HandleUpdateNote(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	res, err := srv.DBClient.UpdateNote(id, noteReq.Name, noteReq.Text, noteReq.Color, noteReq.Media, noteReq.Order)
+	res, err := srv.DBClient.UpdateNote(id, noteReq.Name, noteReq.Text, noteReq.Color, noteReq.Order)
 	if err != nil {
 		slog.Error(err.Error())
 		response.Error = "Error updating note in db"

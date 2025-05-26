@@ -103,7 +103,7 @@ func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 	return notes, nil
 }
 
-func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int) (int, error) {
+func (mc MongoClient) UpdateNote(id, name, text, color string, order int) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return 0, fmt.Errorf("wrong id")
@@ -121,9 +121,6 @@ func (mc MongoClient) UpdateNote(id, name, text, color, media string, order int)
 	}
 	if color != "" {
 		setDoc = append(setDoc, bson.E{Key: "color", Value: color})
-	}
-	if media != "" {
-		setDoc = append(setDoc, bson.E{Key: "media", Value: media})
 	}
 	if order != 0 {
 		setDoc = append(setDoc, bson.E{Key: "order", Value: order})

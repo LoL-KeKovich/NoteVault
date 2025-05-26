@@ -6,7 +6,6 @@ type NoteRequest struct {
 	Name       string             `json:"name,omitempty"`
 	Text       string             `json:"text,omitempty"`
 	Color      string             `json:"color,omitempty"`
-	Media      string             `json:"media,omitempty"`
 	Order      int                `json:"order,omitempty"`
 	IsDeleted  *bool              `json:"is_deleted,omitempty"`
 	NoteBookID primitive.ObjectID `json:"notebook_id,omitempty"`
