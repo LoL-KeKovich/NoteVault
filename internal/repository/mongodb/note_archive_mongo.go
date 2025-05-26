@@ -17,7 +17,12 @@ func (mc MongoClient) MoveNoteToArchive(id string) error {
 	}
 
 	filter := bson.D{{Key: "_id", Value: docId}}
-	updateStmt := bson.D{{Key: "$set", Value: bson.D{{Key: "is_archived", Value: true}}}}
+	updateStmt := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "is_archived", Value: true},
+			{Key: "is_deleted", Value: false},
+		}},
+	}
 
 	_, err = mc.Client.UpdateOne(context.Background(), filter, updateStmt)
 	if err != nil {

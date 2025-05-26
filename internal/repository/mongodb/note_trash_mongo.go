@@ -17,7 +17,12 @@ func (mc MongoClient) MoveNoteToTrash(id string) error {
 	}
 
 	filter := bson.D{{Key: "_id", Value: docId}}
-	updateStmt := bson.D{{Key: "$set", Value: bson.D{{Key: "is_deleted", Value: true}}}}
+	updateStmt := bson.D{
+		{Key: "$set", Value: bson.D{
+			{Key: "is_deleted", Value: true},
+			{Key: "is_archived", Value: false},
+		}},
+	}
 
 	_, err = mc.Client.UpdateOne(context.Background(), filter, updateStmt)
 	if err != nil {
