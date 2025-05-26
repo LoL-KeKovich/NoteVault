@@ -42,9 +42,19 @@ func (mc MongoClient) GetNoteByID(id string) (model.Note, error) {
 
 func (mc MongoClient) GetNotes() ([]model.Note, error) {
 	filter := bson.D{
-		{Key: "$or", Value: bson.A{
-			bson.D{{Key: "is_deleted", Value: bson.D{{Key: "$exists", Value: false}}}},
-			bson.D{{Key: "is_deleted", Value: false}},
+		{Key: "$and", Value: bson.A{
+			bson.D{
+				{Key: "$or", Value: bson.A{
+					bson.D{{Key: "is_deleted", Value: bson.D{{Key: "$exists", Value: false}}}},
+					bson.D{{Key: "is_deleted", Value: false}},
+				}},
+			},
+			bson.D{
+				{Key: "$or", Value: bson.A{
+					bson.D{{Key: "is_archived", Value: bson.D{{Key: "$exists", Value: false}}}},
+					bson.D{{Key: "is_archived", Value: false}},
+				}},
+			},
 		}},
 	}
 

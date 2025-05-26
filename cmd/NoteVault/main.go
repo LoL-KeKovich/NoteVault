@@ -80,7 +80,9 @@ func main() {
 		router.Get("/notes/{id}", noteService.HandleGetNoteByID)
 		router.Get("/notes", noteService.HandleGetNotes)
 		router.Get("/notes/trash", noteService.HandleGetTrashedNotes)
+		router.Get("/notes/archive", noteService.HandleGetArchivedNotes)
 		router.Get("/notes/trash/{id}", noteService.HandleRestoreNoteFromTrash)
+		router.Get("/notes/archive/{id}", noteService.HandleRestoreNoteFromArchive)
 		router.Get("/notes/group/{id}", noteService.HandleGetNotesByNoteBookID)
 		router.Post("/notes", noteService.HandleCreateNote)
 		router.Post("/notes/tag", noteService.HandleGetNotesByTags)
@@ -90,6 +92,7 @@ func main() {
 		router.Patch("/notes/tag/{id}", noteService.HandleRemoveTagFromNote)
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
 		router.Delete("/notes/trash/{id}", noteService.HandleMoveNoteToTrash)
+		router.Delete("/notes/archive/{id}", noteService.HandleMoveNoteToArchive)
 
 		router.Get("/notebooks/{id}", noteBookService.HandleGetNoteBookByID)
 		router.Get("/notebooks", noteBookService.HandleGetNoteBooks)

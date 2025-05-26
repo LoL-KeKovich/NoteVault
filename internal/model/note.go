@@ -9,6 +9,7 @@ type Note struct {
 	Color      string               `bson:"color,omitempty" json:"color,omitempty"`
 	Order      int                  `bson:"order,omitempty" json:"order,omitempty"`
 	IsDeleted  *bool                `bson:"is_deleted,omitempty" json:"is_deleted,omitempty"`
+	IsArchived *bool                `bson:"is_archived,omitempty" json:"is_archived,omitempty"`
 	NoteBookID primitive.ObjectID   `bson:"notebook_id,omitempty" json:"notebook_id,omitempty"`
 	Tags       []primitive.ObjectID `bson:"tags,omitempty" json:"tags,omitempty"`
 }

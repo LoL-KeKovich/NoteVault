@@ -1,5 +1,5 @@
 env: "local"
-storage_path: "mongodb://root:example@mongo:27017"
+storage_path: "mongodb://localhost:27017"
 database: "NoteVault"
 collections:
   notes: "notes"

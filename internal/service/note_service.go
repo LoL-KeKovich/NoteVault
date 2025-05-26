@@ -36,12 +36,19 @@ func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) 
 
 	*noteReq.IsDeleted = false //При создании элемент не может попасть в корзину
 
+	if noteReq.IsArchived == nil {
+		noteReq.IsArchived = new(bool)
+	}
+
+	*noteReq.IsArchived = false //При создании элемент не может попасть в архив
+
 	note := model.Note{
 		Name:       noteReq.Name,
 		Text:       noteReq.Text,
 		Color:      noteReq.Color,
 		Order:      noteReq.Order,
 		IsDeleted:  noteReq.IsDeleted,
+		IsArchived: noteReq.IsArchived,
 		NoteBookID: noteReq.NoteBookID,
 	}
 
@@ -115,6 +122,23 @@ func (srv NoteService) HandleGetTrashedNotes(w http.ResponseWriter, r *http.Requ
 	}
 
 	slog.Info("Trashed notes found")
+	response.Data = notes
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleGetArchivedNotes(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	notes, err := srv.DBClient.GetArchivedNotes()
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error finding archived notes in db"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Archived notes found")
 	response.Data = notes
 	json.NewEncoder(w).Encode(response)
 }
@@ -348,6 +372,32 @@ func (srv NoteService) HandleMoveNoteToTrash(w http.ResponseWriter, r *http.Requ
 	json.NewEncoder(w).Encode(response)
 }
 
+func (srv NoteService) HandleMoveNoteToArchive(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := srv.DBClient.MoveNoteToArchive(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error moving note to archive"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Changed |is_archived| field to true")
+	response.Data = "Successfully moved note to archive"
+	json.NewEncoder(w).Encode(response)
+}
+
 func (srv NoteService) HandleRestoreNoteFromTrash(w http.ResponseWriter, r *http.Request) {
 	response := dto.NoteResponse{}
 
@@ -371,6 +421,32 @@ func (srv NoteService) HandleRestoreNoteFromTrash(w http.ResponseWriter, r *http
 
 	slog.Info("Changed |is_deleted| field to false")
 	response.Data = "Successfully removed note from trash"
+	json.NewEncoder(w).Encode(response)
+}
+
+func (srv NoteService) HandleRestoreNoteFromArchive(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	err := srv.DBClient.RestoreNoteFromArchive(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error restoring note from archive"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Changed |is_archived| field to false")
+	response.Data = "Successfully removed note from archive"
 	json.NewEncoder(w).Encode(response)
 }
 

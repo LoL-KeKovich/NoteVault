@@ -8,6 +8,7 @@ type NoteRequest struct {
 	Color      string             `json:"color,omitempty"`
 	Order      int                `json:"order,omitempty"`
 	IsDeleted  *bool              `json:"is_deleted,omitempty"`
+	IsArchived *bool              `json:"is_archived,omitempty"`
 	NoteBookID primitive.ObjectID `json:"notebook_id,omitempty"`
 	TagID      primitive.ObjectID `json:"tag_id,omitempty"`
 }
