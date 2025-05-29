@@ -1,10 +1,11 @@
 env: "local"
-storage_path: "mongodb://root:example@mongo:27017"
+storage_path: "mongodb://localhost:27017"
 database: "NoteVault"
 collections:
   notes: "notes"
   notebooks: "notebooks"
   tags: "tags"
+  users: "users"
 http_server:
   address: "0.0.0.0:8085"
   timeout: 5s

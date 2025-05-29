@@ -20,6 +20,7 @@ type Collections struct {
 	Notes     string `yaml:"notes"`
 	NoteBooks string `yaml:"notebooks"`
 	Tags      string `yaml:"tags"`
+	Users     string `yaml:"users"`
 }
 
 type HTTPServer struct {

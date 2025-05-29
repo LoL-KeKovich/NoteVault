@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -29,6 +30,17 @@ func main() {
 	noteCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.Notes)
 	noteBookCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.NoteBooks)
 	tagCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.Tags)
+	userCollection := mongoClient.Database(cfg.Database).Collection(cfg.Collections.Users)
+
+	indexEmail := mongo.IndexModel{
+		Keys:    bson.D{{Key: "email", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+
+	_, err := noteBookCollection.Indexes().CreateOne(context.Background(), indexEmail)
+	if err != nil {
+		log.Error("Failed to create unique index for email", slog.String("error", err.Error()))
+	}
 
 	noteService := service.NoteService{
 		DBClient: mongodb.MongoClient{
@@ -57,6 +69,12 @@ func main() {
 		},
 		HelperNoteClient: mongodb.MongoClient{
 			Client: *noteCollection,
+		},
+	}
+
+	userService := service.UserService{
+		DBClient: mongodb.MongoClient{
+			Client: *userCollection,
 		},
 	}
 
@@ -105,6 +123,8 @@ func main() {
 		router.Post("/tags", tagService.HandleCreateTag)
 		router.Put("/tags/{id}", tagService.HandleUpdateTag)
 		router.Delete("/tags/{id}", tagService.HandleDeleteTag)
+
+		router.Post("/users/login", userService.HandleLoginUser)
 	})
 
 	srv := &http.Server{
