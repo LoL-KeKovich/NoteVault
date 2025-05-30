@@ -125,6 +125,11 @@ func main() {
 		router.Delete("/tags/{id}", tagService.HandleDeleteTag)
 
 		router.Post("/users/login", userService.HandleLoginUser)
+
+		router.Group(func(router chi.Router) {
+			router.Use(userService.AuthMiddleware)
+			router.Get("/users/profile", userService.HandleGetProfile)
+		})
 	})
 
 	srv := &http.Server{
