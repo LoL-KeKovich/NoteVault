@@ -9,6 +9,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+func (mc MongoClient) RegisterUser(user model.User) (string, error) {
+	res, err := mc.Client.InsertOne(context.Background(), user)
+	if err != nil {
+		return "", err
+	}
+
+	return res.InsertedID.(primitive.ObjectID).Hex(), nil
+}
+
 func (mc MongoClient) LoginUser(email string) (model.User, error) {
 	var user model.User
 

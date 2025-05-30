@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/LoL-KeKovich/NoteVault/internal/dto"
+	"github.com/LoL-KeKovich/NoteVault/internal/model"
 	"github.com/LoL-KeKovich/NoteVault/internal/repository"
 	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
@@ -22,6 +23,56 @@ const (
 
 type UserService struct {
 	DBClient repository.UserRepo
+}
+
+func (srv UserService) HandleRegisterUser(w http.ResponseWriter, r *http.Request) {
+	response := dto.RegisterResponse{}
+	var registerReq dto.RegisterRequest
+
+	err := json.NewDecoder(r.Body).Decode(&registerReq)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Wrong request"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	if registerReq.Email == "" || registerReq.Password == "" {
+		response.Error = "Email and password are required"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(registerReq.Password), bcrypt.DefaultCost)
+	if err != nil {
+		slog.Error("Failed to hash password", slog.String("error", err.Error()))
+		response.Error = "Internal server error"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	user := model.User{
+		Email:        registerReq.Email,
+		PasswordHash: string(hashedPassword),
+		FirstName:    registerReq.FirstName,
+		LastName:     registerReq.LastName,
+	}
+
+	res, err := srv.DBClient.RegisterUser(user)
+	if err != nil {
+		slog.Error("Failed to create user", slog.String("error", err.Error()))
+		response.Error = "Failed to create user"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("User registered")
+	response.Data = res
+	json.NewEncoder(w).Encode(response)
 }
 
 func (srv UserService) HandleLoginUser(w http.ResponseWriter, r *http.Request) {

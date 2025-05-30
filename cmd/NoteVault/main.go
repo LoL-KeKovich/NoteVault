@@ -124,6 +124,7 @@ func main() {
 		router.Put("/tags/{id}", tagService.HandleUpdateTag)
 		router.Delete("/tags/{id}", tagService.HandleDeleteTag)
 
+		router.Post("/users/register", userService.HandleRegisterUser)
 		router.Post("/users/login", userService.HandleLoginUser)
 
 		router.Group(func(router chi.Router) {
