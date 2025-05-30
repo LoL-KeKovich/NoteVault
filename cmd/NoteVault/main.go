@@ -37,7 +37,7 @@ func main() {
 		Options: options.Index().SetUnique(true),
 	}
 
-	_, err := noteBookCollection.Indexes().CreateOne(context.Background(), indexEmail)
+	_, err := userCollection.Indexes().CreateOne(context.Background(), indexEmail)
 	if err != nil {
 		log.Error("Failed to create unique index for email", slog.String("error", err.Error()))
 	}

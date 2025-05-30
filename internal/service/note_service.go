@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/LoL-KeKovich/NoteVault/internal/dto"
 	"github.com/LoL-KeKovich/NoteVault/internal/model"
@@ -42,6 +43,14 @@ func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) 
 
 	*noteReq.IsArchived = false //При создании элемент не может попасть в архив
 
+	location, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		slog.Error("Failed to load Moscow location, using UTC", slog.String("error", err.Error()))
+		location = time.UTC
+	}
+
+	now := time.Now().In(location)
+
 	note := model.Note{
 		Name:       noteReq.Name,
 		Text:       noteReq.Text,
@@ -50,6 +59,8 @@ func (srv NoteService) HandleCreateNote(w http.ResponseWriter, r *http.Request) 
 		IsDeleted:  noteReq.IsDeleted,
 		IsArchived: noteReq.IsArchived,
 		NoteBookID: noteReq.NoteBookID,
+		CreatedAt:  now,
+		UpdatedAt:  now,
 	}
 
 	res, err := srv.DBClient.CreateNote(note)
@@ -234,7 +245,15 @@ func (srv NoteService) HandleUpdateNote(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	res, err := srv.DBClient.UpdateNote(id, noteReq.Name, noteReq.Text, noteReq.Color, noteReq.Order)
+	location, err := time.LoadLocation("Europe/Moscow")
+	if err != nil {
+		slog.Error("Failed to load Moscow location, using UTC", slog.String("error", err.Error()))
+		location = time.UTC
+	}
+
+	now := time.Now().In(location)
+
+	res, err := srv.DBClient.UpdateNote(id, noteReq.Name, noteReq.Text, noteReq.Color, noteReq.Order, now)
 	if err != nil {
 		slog.Error(err.Error())
 		response.Error = "Error updating note in db"

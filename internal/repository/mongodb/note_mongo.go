@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/LoL-KeKovich/NoteVault/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
@@ -112,7 +113,7 @@ func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 	return notes, nil
 }
 
-func (mc MongoClient) UpdateNote(id, name, text, color string, order int) (int, error) {
+func (mc MongoClient) UpdateNote(id, name, text, color string, order int, updatedAt time.Time) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return 0, fmt.Errorf("wrong id")
@@ -137,6 +138,7 @@ func (mc MongoClient) UpdateNote(id, name, text, color string, order int) (int, 
 	if len(setDoc) == 0 {
 		return 0, nil
 	}
+	setDoc = append(setDoc, bson.E{Key: "updated_at", Value: updatedAt})
 
 	updateStmt := bson.D{{Key: "$set", Value: setDoc}}
 
