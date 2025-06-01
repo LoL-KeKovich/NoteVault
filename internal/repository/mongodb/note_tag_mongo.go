@@ -45,7 +45,23 @@ func (mc MongoClient) RemoveTagFromNote(noteID, tagName string) (int, error) {
 }
 
 func (mc MongoClient) GetNotesByTags(tagNames []string) ([]model.Note, error) {
-	filter := bson.D{{Key: "tags", Value: bson.D{{Key: "$all", Value: tagNames}}}}
+	filter := bson.D{
+		{Key: "$and", Value: bson.A{
+			bson.D{{Key: "tags", Value: bson.D{{Key: "$all", Value: tagNames}}}},
+			bson.D{
+				{Key: "$or", Value: bson.A{
+					bson.D{{Key: "is_deleted", Value: bson.D{{Key: "$exists", Value: false}}}},
+					bson.D{{Key: "is_deleted", Value: false}},
+				}},
+			},
+			bson.D{
+				{Key: "$or", Value: bson.A{
+					bson.D{{Key: "is_archived", Value: bson.D{{Key: "$exists", Value: false}}}},
+					bson.D{{Key: "is_archived", Value: false}},
+				}},
+			},
+		}},
+	}
 	cursor, err := mc.Client.Find(context.Background(), filter)
 	if err != nil {
 		return []model.Note{}, fmt.Errorf("error finding notes by tags: %v", err)

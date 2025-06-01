@@ -88,7 +88,23 @@ func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 		return []model.Note{}, fmt.Errorf("wrong notebook id")
 	}
 
-	filter := bson.D{{Key: "notebook_id", Value: docId}}
+	filter := bson.D{
+		{Key: "$and", Value: bson.A{
+			bson.D{{Key: "notebook_id", Value: docId}},
+			bson.D{
+				{Key: "$or", Value: bson.A{
+					bson.D{{Key: "is_deleted", Value: bson.D{{Key: "$exists", Value: false}}}},
+					bson.D{{Key: "is_deleted", Value: false}},
+				}},
+			},
+			bson.D{
+				{Key: "$or", Value: bson.A{
+					bson.D{{Key: "is_archived", Value: bson.D{{Key: "$exists", Value: false}}}},
+					bson.D{{Key: "is_archived", Value: false}},
+				}},
+			},
+		}},
+	}
 
 	cursor, err := mc.Client.Find(context.Background(), filter)
 	if err != nil {
