@@ -1,8 +1,6 @@
 package model
 
 import (
-	"time"
-
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -14,8 +12,8 @@ type Note struct {
 	Order      int                `bson:"order,omitempty" json:"order,omitempty"`
 	IsDeleted  *bool              `bson:"is_deleted,omitempty" json:"is_deleted,omitempty"`
 	IsArchived *bool              `bson:"is_archived,omitempty" json:"is_archived,omitempty"`
-	CreatedAt  time.Time          `bson:"created_at" json:"created_at"`
-	UpdatedAt  time.Time          `bson:"updated_at" json:"updated_at"`
+	CreatedAt  string             `bson:"created_at" json:"created_at"`
+	UpdatedAt  string             `bson:"updated_at" json:"updated_at"`
 	NoteBookID primitive.ObjectID `bson:"notebook_id,omitempty" json:"notebook_id,omitempty"`
 	Tags       []string           `bson:"tags,omitempty" json:"tags,omitempty"`
 }

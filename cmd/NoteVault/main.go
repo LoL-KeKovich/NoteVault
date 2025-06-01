@@ -10,6 +10,7 @@ import (
 	"github.com/LoL-KeKovich/NoteVault/internal/config"
 	"github.com/LoL-KeKovich/NoteVault/internal/repository/mongodb"
 	"github.com/LoL-KeKovich/NoteVault/internal/service"
+	"github.com/LoL-KeKovich/NoteVault/lib/timezone"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/cors"
@@ -19,6 +20,10 @@ import (
 )
 
 func main() {
+	if _, err := timezone.Init(); err != nil {
+		slog.Error("Failed to init timezone")
+	}
+
 	cfg := config.Load()
 
 	log := SetupLogger(cfg.Env)

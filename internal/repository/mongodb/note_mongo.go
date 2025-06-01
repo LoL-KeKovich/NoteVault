@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log/slog"
-	"time"
 
 	"github.com/LoL-KeKovich/NoteVault/internal/model"
 	"go.mongodb.org/mongo-driver/bson"
@@ -129,7 +128,7 @@ func (mc MongoClient) GetNotesByNoteBookID(id string) ([]model.Note, error) {
 	return notes, nil
 }
 
-func (mc MongoClient) UpdateNote(id, name, text, color string, order int, updatedAt time.Time) (int, error) {
+func (mc MongoClient) UpdateNote(id, name, text, color, updatedAt string, order int) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return 0, fmt.Errorf("wrong id")

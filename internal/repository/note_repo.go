@@ -1,8 +1,6 @@
 package repository
 
 import (
-	"time"
-
 	"github.com/LoL-KeKovich/NoteVault/internal/model"
 )
 
@@ -14,7 +12,7 @@ type NoteRepo interface {
 	GetTrashedNotes() ([]model.Note, error)
 	GetArchivedNotes() ([]model.Note, error)
 	GetNotesByTags([]string) ([]model.Note, error)
-	UpdateNote(string, string, string, string, int, time.Time) (int, error)
+	UpdateNote(string, string, string, string, string, int) (int, error)
 	UpdateNoteNoteBook(string, string) (int, error)
 	UnlinkNotesFromNoteBook(string) (int, error)
 	UnlinkNotesFromTag(string) (int, error)
