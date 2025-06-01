@@ -42,6 +42,16 @@ func main() {
 		log.Error("Failed to create unique index for email", slog.String("error", err.Error()))
 	}
 
+	indexName := mongo.IndexModel{
+		Keys:    bson.D{{Key: "name", Value: 1}},
+		Options: options.Index().SetUnique(true),
+	}
+
+	_, err = tagCollection.Indexes().CreateOne(context.Background(), indexName)
+	if err != nil {
+		log.Error("Failed to create unique index for tag name", slog.String("error", err.Error()))
+	}
+
 	noteService := service.NoteService{
 		DBClient: mongodb.MongoClient{
 			Client: *noteCollection,

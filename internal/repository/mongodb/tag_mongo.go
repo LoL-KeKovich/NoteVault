@@ -40,6 +40,21 @@ func (mc MongoClient) GetTagByID(id string) (model.Tag, error) {
 	return tag, nil
 }
 
+func (mc MongoClient) GetTagByName(tagName string) (model.Tag, error) {
+	var tag model.Tag
+
+	filter := bson.D{{Key: "name", Value: tagName}}
+
+	err := mc.Client.FindOne(context.Background(), filter).Decode(&tag)
+	if err == mongo.ErrNoDocuments {
+		return model.Tag{}, fmt.Errorf("tag not found")
+	} else if err != nil {
+		return model.Tag{}, err
+	}
+
+	return tag, nil
+}
+
 func (mc MongoClient) GetTags() ([]model.Tag, error) {
 	filter := bson.D{}
 

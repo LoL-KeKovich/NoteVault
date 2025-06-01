@@ -202,14 +202,11 @@ func (srv NoteService) HandleGetNotesByTags(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var tagIDs []string
+	var tagNames []string
 
-	for _, id := range noteReq.TagIDs {
-		tagID := id.Hex()
-		tagIDs = append(tagIDs, tagID)
-	}
+	tagNames = append(tagNames, noteReq.TagNames...)
 
-	notes, err := srv.DBClient.GetNotesByTags(tagIDs)
+	notes, err := srv.DBClient.GetNotesByTags(tagNames)
 	if err != nil {
 		slog.Error(err.Error())
 		response.Error = "Error finding notes by tags"
@@ -334,24 +331,24 @@ func (srv NoteService) HandleAddTagToNote(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	if noteReq.TagID.IsZero() {
-		slog.Error("Empty tag_id field")
-		response.Error = "No tag id"
+	if noteReq.TagName == "" {
+		slog.Error("Empty tag_name field")
+		response.Error = "No tag name"
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	_, err = srv.HelperTagClient.GetTagByID(noteReq.TagID.Hex())
+	_, err = srv.HelperTagClient.GetTagByName(noteReq.TagName)
 	if err != nil {
 		slog.Error(err.Error())
-		response.Error = "wrong tag id"
+		response.Error = "wrong tag name"
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	res, err := srv.DBClient.AddTagToNote(id, noteReq.TagID.Hex())
+	res, err := srv.DBClient.AddTagToNote(id, noteReq.TagName)
 	if err != nil {
 		slog.Error(err.Error())
 		response.Error = "Error adding tag to note"
@@ -517,24 +514,24 @@ func (srv NoteService) HandleRemoveTagFromNote(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	if noteReq.TagID.IsZero() {
-		slog.Error("Empty tag_id field")
-		response.Error = "No tag id"
+	if noteReq.TagName == "" {
+		slog.Error("Empty tag_name field")
+		response.Error = "No tag name"
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	_, err = srv.HelperTagClient.GetTagByID(noteReq.TagID.Hex())
+	_, err = srv.HelperTagClient.GetTagByName(noteReq.TagName)
 	if err != nil {
 		slog.Error(err.Error())
-		response.Error = "wrong tag id"
+		response.Error = "wrong tag name"
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(response)
 		return
 	}
 
-	res, err := srv.DBClient.RemoveTagFromNote(id, noteReq.TagID.Hex())
+	res, err := srv.DBClient.RemoveTagFromNote(id, noteReq.TagName)
 	if err != nil {
 		slog.Error(err.Error())
 		response.Error = "Error removing tag from note"

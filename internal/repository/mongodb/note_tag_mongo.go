@@ -10,19 +10,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (mc MongoClient) AddTagToNote(noteID, tagID string) (int, error) {
+func (mc MongoClient) AddTagToNote(noteID, tagName string) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(noteID)
 	if err != nil {
 		return 0, fmt.Errorf("invalid note ID: %v", err)
 	}
 
-	objTagId, err := primitive.ObjectIDFromHex(tagID)
-	if err != nil {
-		return 0, fmt.Errorf("invalid tag ID: %v", err)
-	}
-
 	filter := bson.D{{Key: "_id", Value: docId}}
-	updateStmt := bson.D{{Key: "$addToSet", Value: bson.D{{Key: "tags", Value: objTagId}}}}
+	updateStmt := bson.D{{Key: "$addToSet", Value: bson.D{{Key: "tags", Value: tagName}}}}
 
 	res, err := mc.Client.UpdateOne(context.Background(), filter, updateStmt)
 	if err != nil {
@@ -32,19 +27,14 @@ func (mc MongoClient) AddTagToNote(noteID, tagID string) (int, error) {
 	return int(res.ModifiedCount), nil
 }
 
-func (mc MongoClient) RemoveTagFromNote(noteID, tagID string) (int, error) {
+func (mc MongoClient) RemoveTagFromNote(noteID, tagName string) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(noteID)
 	if err != nil {
 		return 0, fmt.Errorf("invalid note ID: %v", err)
 	}
 
-	objTagId, err := primitive.ObjectIDFromHex(tagID)
-	if err != nil {
-		return 0, fmt.Errorf("invalid tag ID: %v", err)
-	}
-
 	filter := bson.D{{Key: "_id", Value: docId}}
-	updateStmt := bson.D{{Key: "$pull", Value: bson.D{{Key: "tags", Value: objTagId}}}}
+	updateStmt := bson.D{{Key: "$pull", Value: bson.D{{Key: "tags", Value: tagName}}}}
 
 	res, err := mc.Client.UpdateOne(context.Background(), filter, updateStmt)
 	if err != nil {
@@ -54,18 +44,8 @@ func (mc MongoClient) RemoveTagFromNote(noteID, tagID string) (int, error) {
 	return int(res.ModifiedCount), nil
 }
 
-func (mc MongoClient) GetNotesByTags(tagIDs []string) ([]model.Note, error) {
-	var objTagIDs []primitive.ObjectID
-
-	for _, id := range tagIDs {
-		objID, err := primitive.ObjectIDFromHex(id)
-		if err != nil {
-			return nil, fmt.Errorf("invalid tag id: %s", id)
-		}
-		objTagIDs = append(objTagIDs, objID)
-	}
-
-	filter := bson.D{{Key: "tags", Value: bson.D{{Key: "$all", Value: objTagIDs}}}}
+func (mc MongoClient) GetNotesByTags(tagNames []string) ([]model.Note, error) {
+	filter := bson.D{{Key: "tags", Value: bson.D{{Key: "$all", Value: tagNames}}}}
 	cursor, err := mc.Client.Find(context.Background(), filter)
 	if err != nil {
 		return []model.Note{}, fmt.Errorf("error finding notes by tags: %v", err)

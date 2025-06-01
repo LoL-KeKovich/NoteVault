@@ -10,11 +10,11 @@ type NoteRequest struct {
 	IsDeleted  *bool              `json:"is_deleted,omitempty"`
 	IsArchived *bool              `json:"is_archived,omitempty"`
 	NoteBookID primitive.ObjectID `json:"notebook_id,omitempty"`
-	TagID      primitive.ObjectID `json:"tag_id,omitempty"`
+	TagName    string             `json:"tag_name,omitempty"`
 }
 
 type NoteTagsRequest struct {
-	TagIDs []primitive.ObjectID `json:"tags,omitempty"`
+	TagNames []string `json:"tags,omitempty"`
 }
 
 type NoteResponse struct {
