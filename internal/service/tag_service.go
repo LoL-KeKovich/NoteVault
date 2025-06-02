@@ -139,7 +139,16 @@ func (srv TagService) HandleDeleteTag(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := srv.HelperNoteClient.UnlinkNotesFromTag(id)
+	tag, err := srv.DBClient.GetTagByID(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Tag not found"
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	_, err = srv.HelperNoteClient.UnlinkNotesFromTag(tag.Name)
 	if err != nil {
 		slog.Error(err.Error())
 		response.Error = "Error unlinking notes from tag"

@@ -136,7 +136,6 @@ func (mc MongoClient) UpdateNote(id, name, text, color, updatedAt string, order 
 
 	filter := bson.D{{Key: "_id", Value: docId}}
 
-	//Необходимый костыль
 	setDoc := bson.D{}
 	if name != "" {
 		setDoc = append(setDoc, bson.E{Key: "name", Value: name})
@@ -187,7 +186,6 @@ func (mc MongoClient) UpdateNoteNoteBook(noteID, noteBookID string) (int, error)
 	return int(res.ModifiedCount), nil
 }
 
-// Вспомогательная функция для удаления пустых id групп
 func (mc MongoClient) UnlinkNotesFromNoteBook(id string) (int, error) {
 	docId, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
@@ -221,14 +219,9 @@ func (mc MongoClient) DeleteNote(id string) (int, error) {
 	return int(res.DeletedCount), nil
 }
 
-func (mc MongoClient) UnlinkNotesFromTag(id string) (int, error) {
-	tagId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		return 0, fmt.Errorf("wrong id")
-	}
-
-	filter := bson.D{{Key: "tags", Value: tagId}}
-	updateStmt := bson.D{{Key: "$pull", Value: bson.D{{Key: "tags", Value: tagId}}}}
+func (mc MongoClient) UnlinkNotesFromTag(tagName string) (int, error) {
+	filter := bson.D{{Key: "tags", Value: tagName}}
+	updateStmt := bson.D{{Key: "$pull", Value: bson.D{{Key: "tags", Value: tagName}}}}
 
 	res, err := mc.Client.UpdateMany(context.Background(), filter, updateStmt)
 	if err != nil {
