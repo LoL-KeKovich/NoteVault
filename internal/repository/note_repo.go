@@ -14,6 +14,7 @@ type NoteRepo interface {
 	GetNotesByTags([]string) ([]model.Note, error)
 	UpdateNote(string, string, string, string, string, int) (int, error)
 	UpdateNoteNoteBook(string, string) (int, error)
+	RemoveNoteBookFromNote(string) (int, error)
 	UnlinkNotesFromNoteBook(string) (int, error)
 	UnlinkNotesFromTag(string) (int, error)
 	AddTagToNote(string, string) (int, error)

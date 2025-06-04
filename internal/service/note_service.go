@@ -298,6 +298,33 @@ func (srv NoteService) HandleUpdateNoteNoteBook(w http.ResponseWriter, r *http.R
 	json.NewEncoder(w).Encode(response)
 }
 
+func (srv NoteService) HandleRemoveNoteBookFromNote(w http.ResponseWriter, r *http.Request) {
+	response := dto.NoteResponse{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		slog.Error("Empty id field")
+		response.Error = "Wrong id"
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	res, err := srv.DBClient.RemoveNoteBookFromNote(id)
+	if err != nil {
+		slog.Error(err.Error())
+		response.Error = "Error removing notebook from note"
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+	slog.Info("Notebook removed", "modifiedCount", res)
+	response.Data = res
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
 func (srv NoteService) HandleAddTagToNote(w http.ResponseWriter, r *http.Request) {
 	response := dto.NoteResponse{}
 	var noteReq dto.NoteRequest

@@ -126,6 +126,7 @@ func main() {
 		router.Delete("/notes/{id}", noteService.HandleDeleteNote)
 		router.Delete("/notes/trash/{id}", noteService.HandleMoveNoteToTrash)
 		router.Delete("/notes/archive/{id}", noteService.HandleMoveNoteToArchive)
+		router.Delete("/notes/notebook/{id}", noteService.HandleRemoveNoteBookFromNote)
 
 		router.Get("/notebooks/{id}", noteBookService.HandleGetNoteBookByID)
 		router.Get("/notebooks", noteBookService.HandleGetNoteBooks)
